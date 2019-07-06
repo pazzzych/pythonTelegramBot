@@ -11,26 +11,28 @@ class DBHelper:
     # creates a new table called items in our database 
     # This table has one column (called description)
     def setup(self):
-        stmt = "CREATE TABLE IF NOT EXISTS items (description text)"
+        print("creating table")
+        stmt = "CREATE TABLE IF NOT EXISTS items (description text, owner text)"
         self.conn.execute(stmt)
         self.conn.commit()
 
     # takes the text for the item and inserts it into our database table
     def add_item(self, item_text):
-        stmt = "INSERT INTO items (description) VALUES (?)"
-        args = (item_text, )
+        stmt = "INSERT INTO items (description, owner) VALUES (?, ?)"
+        rgs = (item_text, owner)
         self.conn.execute(stmt, args)
         self.conn.commit()
     
     # takes the text for an item and removes it from the database
     def delete_item(self, item_text):
-        stmt = "DELETE FROM items WHERE description = (?)"
-        args = (item_text, )
+        stmt = "DELETE FROM items WHERE description = (?) AND owner = (?)"
+        args = (item_text, owner )
         self.conn.execute(stmt, args)
         self.conn.commit()
 
     # returns a list of all the items in our database
     def get_items(self):
-        stmt = "SELECT description FROM items"
-        return [x[0] for x in self.conn.execute(stmt)]
+        stmt = "SELECT description FROM items WHERE owner = (?)"
+        args = (owner, )
+        return [x[0] for x in self.conn.execute(stmt, args)]
 
